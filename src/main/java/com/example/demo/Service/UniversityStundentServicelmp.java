@@ -11,23 +11,29 @@ import java.util.Optional;
 
 @Service
 public class UniversityStundentServicelmp implements UniversityStudentService {
+
+    @Autowired
+    private RepositoryStudent repositoryStudent;
+
     @Override
     public List<UniversityStudent> findAllStudents() {
-
+        return repositoryStudent.findAll();
     }
 
     @Override
-    public void SaveStudents(UniversityStudent universityStudent) {
-
+    public UniversityStudent SaveStudent(UniversityStudent universityStudent) {
+       return repositoryStudent.save(universityStudent);
     }
 
     @Override
-    public void DeleteStudents(UniversityStudent universityStudent) {
-
+    public void DeleteStudent(UniversityStudent universityStudent) {
+        repositoryStudent.delete(universityStudent);
     }
 
+
+
     @Override
-    public Optional<UniversityStudent> findStudentById(long id) {
-        return Optional.empty();
+    public Optional<UniversityStudent> findById(long id) {
+        return repositoryStudent.findById(id);
     }
 }

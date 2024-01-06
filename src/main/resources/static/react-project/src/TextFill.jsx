@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 
@@ -16,13 +16,8 @@ export default function TextFieldsAndButtomSubmit() {
     if (check(AccountUser, PasswordUser)) return "success";
     return "error";
   };
-  const [buttomResponse, setButtomRespone] = useState("Submit");
   const [AccountUser, setAccount] = useState("");
   const [PasswordUser, setPassword] = useState("");
-  useEffect(() => {
-    if (check(AccountUser, PasswordUser)) return setButtomRespone("Success");
-    return setButtomRespone("Submit");
-  });
   return (
     <>
       <Box
@@ -39,7 +34,7 @@ export default function TextFieldsAndButtomSubmit() {
         }}
         noValidate
         autoComplete="off"
-      >
+    >
         <TextField
           onChange={(e) => {
             setAccount(e.target.value);
@@ -79,7 +74,7 @@ export default function TextFieldsAndButtomSubmit() {
           }}
           variant="contained"
         >
-          {buttomResponse}
+          SUBMIT
         </Button>
       </Stack>
     </>

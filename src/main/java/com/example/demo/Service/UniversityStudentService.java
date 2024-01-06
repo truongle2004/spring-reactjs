@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface UniversityStudentService {
     public List<UniversityStudent> findAllStudents();
-    public void SaveStudents(UniversityStudent universityStudent);
-    public void DeleteStudents(UniversityStudent universityStudent);
-    public Optional<UniversityStudent> findStudentById(long id);
+    public UniversityStudent SaveStudent(UniversityStudent universityStudent);
+    public void DeleteStudent(UniversityStudent universityStudent);
+    public Optional<UniversityStudent> findById(long id);
 }
