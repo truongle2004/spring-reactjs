@@ -1,7 +1,7 @@
 package com.example.demo.StudentController;
 
 
-import com.example.demo.Reponsitory.RepositoryStudent;
+import com.example.demo.Exception.UniversityStudentNotFoundException;
 import com.example.demo.Service.UniversityStudentService;
 import com.example.demo.modelStudent.UniversityStudent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,36 +10,41 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.swing.text.html.Option;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api")
 public class StudentControllerServices {
     @Autowired
-    private UniversityStudentService universityStudentService;
+    private UniversityStudentService repository;
 
-    @GetMapping(path = "/students")
+    @GetMapping(path = "/student")
     public ResponseEntity<List<UniversityStudent>> showAllStudents() {
-        return new ResponseEntity<>(universityStudentService.findAllStudents(), HttpStatus.OK);
+        return new ResponseEntity<>(repository.findAllStudents(), HttpStatus.OK);
     }
 
+//    @GetMapping(path = "/student/{id}")
+//    public ResponseEntity<String> getStudentDetail(@PathVariable long id) {
+//        Optional<UniversityStudent> student = repository.findById(id);
+//        if (student.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body("STUDENT FOUND");
+//    }
+
+
     @GetMapping(path = "/student/{id}")
-    public ResponseEntity<String> getStudentDetail(@PathVariable long id) {
-        Optional<UniversityStudent> student = universityStudentService.findById(id);
-        if (student.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("STUDENT FOUND");
+    public UniversityStudent studentDetail(@PathVariable long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new UniversityStudentNotFoundException(id));
     }
 
 
     @PostMapping
     public ResponseEntity<String> createStudent(@RequestBody UniversityStudent universityStudent) {
-        UniversityStudent newStudent = universityStudentService.SaveStudent(universityStudent);
+        UniversityStudent newStudent = repository.SaveStudent(universityStudent);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("{id}")
@@ -50,12 +55,28 @@ public class StudentControllerServices {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> deleteStudent(@PathVariable long id) {
-        Optional<UniversityStudent> CurrentStudent = universityStudentService.findById(id);
+        Optional<UniversityStudent> CurrentStudent = repository.findById(id);
         if (CurrentStudent.isPresent()) {
-            universityStudentService.DeleteStudent(CurrentStudent.get());
+            repository.DeleteStudent(CurrentStudent.get());
             return ResponseEntity.ok("DELETE STUDENT SUCCESS");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("DELETE FAILED - student not found");
+    }
 
+    @PutMapping(path = "/student/{id}")
+    public UniversityStudent replaceStudent(@RequestBody UniversityStudent universityStudent, @PathVariable long id) {
+        return repository.findById(id).map(
+                        student -> {
+                            student.setAge(universityStudent.getAge());
+                            student.setId(universityStudent.getId());
+                            student.setName(universityStudent.getName());
+                            student.setEmail(universityStudent.getEmail());
+                            student.setCountry(universityStudent.getCountry());
+                            return repository.SaveStudent(student);
+                        })
+                .orElseGet(() -> {
+                    universityStudent.setId(id);
+                    return repository.SaveStudent(universityStudent);
+                });
     }
 }
